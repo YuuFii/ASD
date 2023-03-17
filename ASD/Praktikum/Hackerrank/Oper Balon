@@ -1,0 +1,143 @@
+import java.util.Scanner;
+
+class NodeCSLL {
+    String name;
+    NodeCSLL next;
+
+    NodeCSLL() {
+    }
+    NodeCSLL(String newName) {
+        this.name = newName;
+    }
+}
+
+class CSLL {
+    NodeCSLL head;
+    NodeCSLL tail;
+    int size;
+
+    CSLL(){
+        head = tail = null;
+        size = 0;
+    }
+
+    boolean isEmpty() {
+        return size == 0;
+    }
+
+    int getSize() {
+        return size;
+    }
+
+    void addFirst(String newData) {
+        NodeCSLL newNode = new NodeCSLL(newData);
+
+        if (isEmpty()) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            newNode.next = head;
+            head = newNode;
+        }
+        tail.next = head;
+        size++;
+    }
+
+    void addLast(String newData) {
+        NodeCSLL newNode = new NodeCSLL(newData);
+
+        if (isEmpty()) {
+            head = newNode;
+        } else {
+            tail.next = newNode;
+        }
+        tail = newNode;
+        tail.next = head;
+        size++;
+    }
+
+    void printList() {
+        if (isEmpty()) {
+            System.out.println("List masih kosong.");
+        } else {
+            NodeCSLL temp = head;
+
+            do {
+                System.out.print(temp.name + " -> ");
+                temp = temp.next;
+            } while (temp != head);
+            System.out.println();
+        }
+    }
+
+    void balloonPass() {
+        if (isEmpty()) {
+            System.out.println("List masih kosong.");
+        } else if (getSize() == 1) {
+            System.out.println("Tidak bisa oper.");
+        } else {
+            head = head.next;
+            tail = tail.next;
+        }
+    }
+
+    void balloonLocation() {
+        if (isEmpty()) {
+            System.out.println("List masih kosong.");
+        } else {
+            System.out.println("Balon ada pada " + tail.name + ".");
+        }
+    }
+
+    void balloonExplode() {
+        if (isEmpty()) {
+            System.out.println("List masih kosong.");
+        } else {
+            System.out.println("Boom! " + head.name + " kalah.");
+            System.exit(0);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        CSLL list = new CSLL();
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = 0; 
+        
+        try {
+            n = sc.nextInt();
+        } catch (Exception e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            sc.close();
+            return;
+        }
+        
+        sc.nextLine();
+
+        String command;
+        String[] splitted = new String[2];
+        for (int i = 0; i < n; i++) {
+            command = sc.nextLine();
+            splitted = command.split(" ");
+
+            if (splitted[0].equalsIgnoreCase("addfirst")) {
+                list.addFirst(splitted[1]);
+            } else if (splitted[0].equalsIgnoreCase("addlast")) {
+                list.addLast(splitted[1]);
+            } else if (splitted[0].equalsIgnoreCase("print")) {
+                list.printList();
+            } else if (splitted[0].equalsIgnoreCase("balloon")) {
+                if (splitted[1].equalsIgnoreCase("pass")) {
+                    list.balloonPass();
+                } else if (splitted[1].equalsIgnoreCase("loc")) {
+                    list.balloonLocation();
+                } else if (splitted[1].equalsIgnoreCase("boom")) {
+                    list.balloonExplode();
+                }
+            }
+        }
+    }
+}
