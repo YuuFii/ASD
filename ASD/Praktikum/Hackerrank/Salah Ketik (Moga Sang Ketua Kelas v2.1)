@@ -1,0 +1,235 @@
+import java.util.Scanner;
+
+class NodeDLL {
+    String data;
+    NodeDLL prev;
+    NodeDLL next;
+
+    NodeDLL() {
+    }
+
+    NodeDLL(String newData) {
+        this.data = newData;
+        prev = next = null;
+    }
+}
+
+class DLL {
+    NodeDLL head;
+    NodeDLL tail;
+    int size;
+
+    boolean isEmpty() {
+        return size == 0;
+    }
+
+    int getSize() {
+        return size;
+    }
+
+    void addFirst(String newData) {
+        NodeDLL newNode = new NodeDLL(newData);
+        if(isEmpty()){
+            head = tail = newNode;
+            size++;
+        } else {
+            head.prev = newNode;
+            newNode.next = head;
+            head = newNode;
+            size++;
+        }
+    }
+
+    void addLast(String newData) {
+        NodeDLL newNode = new NodeDLL(newData);
+        if(head == null){
+            head = tail = newNode;
+        } else {
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+        }
+        size++;
+    }
+
+    void removeFirst() {
+        if(isEmpty()){
+            System.out.println("List masih kosong.");
+        } else if(size == 1){
+            head = tail = null;
+            size--;
+        } else {
+            head = head.next;
+            head.prev.next = null;
+            head.prev = null;
+            size--;
+        }
+    }
+
+    void removeLast() {
+        if(isEmpty()){
+            System.out.println("List masih kosong.");
+        } else if(size == 1){
+            head = tail = null;
+            size--;
+        } else {
+            tail.prev.next = null;
+            tail = tail.prev;
+            size--;
+        }
+    }
+
+    void addAtIndex(int targetIndex, String newData) {
+        if (head == null) {
+            System.out.println("List masih kosong.");
+            return;
+        }
+
+        if (targetIndex < 0 || targetIndex > size) {
+            System.out.println("Index tidak valid.");
+            return;
+        }
+
+        NodeDLL newNode = new NodeDLL(newData);
+
+        if (targetIndex == 0) {
+            newNode.next = this.head;
+            this.head.prev = newNode;
+            this.head = newNode;
+        } else if (targetIndex == this.size) {
+            newNode.prev = this.tail;
+            this.tail.next = newNode;
+            this.tail = newNode;
+        } else {
+            NodeDLL temp = this.head;
+            for (int i = 0; i < targetIndex - 1; i++) {
+                temp = temp.next;
+            }
+            newNode.prev = temp;
+            newNode.next = temp.next;
+            temp.next.prev = newNode;
+            temp.next = newNode;
+        }
+
+        this.size++;
+    }
+
+    void removeTarget(String targetData) {
+        if (this.head == null) {
+            System.out.println("List masih kosong.");
+            return;
+        }
+
+        NodeDLL temp = this.head;
+
+        while (temp != null) {
+            if (temp.data.equals(targetData)) {
+                if (temp == this.head && temp == this.tail) {
+                    this.head = null;
+                    this.tail = null;
+                } else if (temp == this.head) {
+                    this.head = temp.next;
+                    this.head.prev = null;
+                } else if (temp == this.tail) {
+                    this.tail = temp.prev;
+                    this.tail.next = null;
+                } else {
+                    temp.prev.next = temp.next;
+                    temp.next.prev = temp.prev;
+                }
+
+                this.size--;
+                return;
+            }
+            temp = temp.next;
+        }
+
+        System.out.println("Data tidak ada!");
+    }
+
+    void printForward() {
+        NodeDLL temp = head;
+        if(isEmpty()){
+            System.out.println("List masih kosong.");
+        } else {
+            while(temp != null){
+                System.out.print(temp.data + " <--> ");
+                temp = temp.next;
+            }
+            System.out.println();
+        }
+    }
+
+    void printBackward() {
+        NodeDLL temp = null;
+        NodeDLL current = head;
+
+        while(current != null){
+            temp = current.prev;
+            current.prev = current.next;
+            current.next = temp;
+            current = current.prev;
+        }
+
+        if(temp != null){
+            head = temp.prev;
+        }
+
+        NodeDLL temp2 = head;
+        if(isEmpty()){
+            System.out.println("List masih kosong.");
+        } else {
+            while(temp2 != null){
+                System.out.print(temp2.data + " <--> ");
+                temp2 = temp2.next;
+            }
+            System.out.println();
+        }
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        DLL dll = new DLL();
+
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        String command = "";
+        String[] splitted = new String[3];
+        for (int i = 0; i < n; i++) {
+            try{
+                command = sc.nextLine();
+            } catch(Exception e){
+                dll.printForward();
+            }
+            splitted = command.split(" ");
+
+            if (splitted[0].toUpperCase().equals("ADD")) {
+                if (splitted[1].toUpperCase().equals("FIRST")) {
+                    dll.addFirst(splitted[2]);
+                } else if (splitted[1].toUpperCase().equals("LAST")) {
+                    dll.addLast(splitted[2]);
+                }
+            } else if (splitted[0].toUpperCase().equals("REMOVE")) {
+                if (splitted[1].toUpperCase().equals("FIRST")) {
+                    dll.removeFirst();
+                } else if (splitted[1].toUpperCase().equals("LAST")) {
+                    dll.removeLast();
+                } else if (splitted[1].toUpperCase().equals("TARGET")) {
+                    dll.removeTarget(splitted[2]);
+                }
+            } else if (splitted[0].toUpperCase().equals("INDEX")) {
+                dll.addAtIndex(Integer.parseInt(splitted[1]), splitted[2]);
+            } else if (splitted[0].toUpperCase().equals("PRINT")) {
+                if (splitted[1].toUpperCase().equals("FWD")) {
+                    dll.printForward();
+                } else if (splitted[1].toUpperCase().equals("BWD")) {
+                    dll.printBackward();
+                }
+            }
+        }
+    }
+}
